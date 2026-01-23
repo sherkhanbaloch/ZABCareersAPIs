@@ -1,0 +1,6 @@
+@ZABCareersAPIs_HostAddress = http://localhost:5175
+
+GET {{ZABCareersAPIs_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
