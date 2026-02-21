@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using ZABCareersAPIs.Data;
 
@@ -11,9 +12,11 @@ using ZABCareersAPIs.Data;
 namespace ZABCareersAPIs.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260209111625_added navigation")]
+    partial class addednavigation
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -161,6 +164,7 @@ namespace ZABCareersAPIs.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("FeaturedImageUrl")
+                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Gender")
@@ -182,7 +186,7 @@ namespace ZABCareersAPIs.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("OtherBenefits")
+                    b.Property<string>("OtherBenifits")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
@@ -193,9 +197,8 @@ namespace ZABCareersAPIs.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("Salary")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                    b.Property<decimal>("Salary")
+                        .HasColumnType("decimal(18,2)");
 
                     b.Property<int>("Vacancy")
                         .HasColumnType("int");
@@ -224,6 +227,9 @@ namespace ZABCareersAPIs.Migrations
                     b.Property<string>("Email")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("MessageStatus")
+                        .HasColumnType("int");
 
                     b.Property<string>("MessageText")
                         .IsRequired()

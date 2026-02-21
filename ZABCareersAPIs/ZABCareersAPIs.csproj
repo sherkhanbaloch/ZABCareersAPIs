@@ -17,4 +17,9 @@
     <PackageReference Include="Scalar.AspNetCore" Version="2.12.14" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="wwwroot\Images\CampusLogos\" />
+    <Folder Include="wwwroot\Images\JobImages\" />
+  </ItemGroup>
+
 </Project>

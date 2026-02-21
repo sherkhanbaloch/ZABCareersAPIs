@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using ZABCareersAPIs.Data;
 using ZABCareersAPIs.Models;
 
@@ -17,14 +18,23 @@ namespace ZABCareersAPIs.Controllers
         }
 
         [HttpGet("GetAllUsers")]
-        public IActionResult GetAllUsers()
+        public async Task<IActionResult> GetAllUsers()
         {
-            var data = db.Tbl_Users.ToList();
+            var data = await db.Tbl_Users.Select(u => new
+            {
+                u.UserId,
+                u.UserName,
+                u.UserEmail,
+                u.UserPassword,
+                u.Role.RoleName,
+                u.Campus.CampusName
+            }).ToListAsync();
+
             return Ok(data);
         }
 
         [HttpPost("AddUser")]
-        public IActionResult AddUser([FromForm] User user)
+        public async Task<IActionResult> AddUser([FromBody] User user)
         {
             if (user == null)
             {
@@ -32,16 +42,16 @@ namespace ZABCareersAPIs.Controllers
             }
             else
             {
-                db.Tbl_Users.Add(user);
-                db.SaveChanges();
+                await db.Tbl_Users.AddAsync(user);
+                await db.SaveChangesAsync();
                 return Created();
             }
         }
 
         [HttpPut("UpdateUser/{Id}")]
-        public IActionResult UpdateUser(int Id, [FromForm] User user)
+        public async Task<IActionResult> UpdateUser(int Id, [FromBody] User user)
         {
-            var data = db.Tbl_Users.Find(Id);
+            var data = await db.Tbl_Users.FindAsync(Id);
 
             if (data == null)
             {
@@ -54,15 +64,15 @@ namespace ZABCareersAPIs.Controllers
                 data.CampusId = user.CampusId;
                 data.UserEmail = user.UserEmail;
                 data.UserPassword = user.UserPassword;
-                db.SaveChanges();
+                await db.SaveChangesAsync();
                 return Ok(data);
             }
         }
 
         [HttpDelete("DeleteUser/{Id}")]
-        public IActionResult DeleteUser(int Id)
+        public async Task<IActionResult> DeleteUser(int Id)
         {
-            var data = db.Tbl_Users.Find(Id);
+            var data = await db.Tbl_Users.FindAsync(Id);
 
             if (data == null)
             {
@@ -71,15 +81,25 @@ namespace ZABCareersAPIs.Controllers
             else
             {
                 db.Tbl_Users.Remove(data);
-                db.SaveChanges();
+                await db.SaveChangesAsync();
                 return NoContent();
             }
         }
 
         [HttpGet("GetUserByID/{Id}")]
-        public IActionResult GetUserByID(int Id)
+        public async Task<IActionResult> GetUserByID(int Id)
         {
-            var data = db.Tbl_Users.Find(Id);
+            var data = await db.Tbl_Users.Where(u => u.UserId == Id).Select(u => new
+            {
+                u.UserId,
+                u.UserName,
+                u.UserEmail,
+                u.UserPassword,
+                u.RoleId,
+                u.Role.RoleName,
+                u.CampusId,
+                u.Campus.CampusName
+            }).FirstOrDefaultAsync();
 
             if (data == null)
             {

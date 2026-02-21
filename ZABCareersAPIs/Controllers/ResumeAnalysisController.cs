@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using ZABCareersAPIs.Data;
 
 namespace ZABCareersAPIs.Controllers
@@ -16,9 +17,9 @@ namespace ZABCareersAPIs.Controllers
         }
 
         [HttpGet("GetAllResumeAnalysis")]
-        public IActionResult GetAllResumeAnalysis()
+        public async Task<IActionResult> GetAllResumeAnalysis()
         {
-            var data = db.Tbl_ResumeAnalysis.ToList();
+            var data = await db.Tbl_ResumeAnalysis.ToListAsync();
             return Ok(data);
         }
     }

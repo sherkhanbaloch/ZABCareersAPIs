@@ -1,4 +1,6 @@
-﻿namespace ZABCareersAPIs.Models
+﻿using System.ComponentModel.DataAnnotations.Schema;
+
+namespace ZABCareersAPIs.Models
 {
     public class Candidate
     {
@@ -7,7 +9,9 @@
         public string CandidateEmail { get; set; }
         public string CandidatePassword { get; set; }
         public string CandidateMobile { get; set; }
-        public string CandidateResume { get; set; }
+        [NotMapped]
+        public IFormFile CandidateResume { get; set; }
+        public string CandidateResumeUrl { get; set; }
         public int CandidateStatus { get; set; }
     }
 }

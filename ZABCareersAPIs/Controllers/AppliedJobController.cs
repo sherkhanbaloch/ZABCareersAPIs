@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using ZABCareersAPIs.Data;
 using ZABCareersAPIs.Models;
 using static System.Net.Mime.MediaTypeNames;
@@ -18,14 +19,14 @@ namespace ZABCareersAPIs.Controllers
         }
 
         [HttpGet("GetAllApplications")]
-        public IActionResult GetAllApplications()
+        public async Task<IActionResult> GetAllApplications()
         {
-            var data = db.Tbl_AppliedJobs.ToList();
+            var data = await db.Tbl_AppliedJobs.ToListAsync();
             return Ok(data);
         }
 
         [HttpPost("AddApplication")]
-        public IActionResult AddApplication([FromForm] AppliedJob appliedJob)
+        public async Task<IActionResult> AddApplication([FromForm] AppliedJob appliedJob)
         {
             if (appliedJob == null)
             {
@@ -33,16 +34,16 @@ namespace ZABCareersAPIs.Controllers
             }
             else
             {
-                db.Tbl_AppliedJobs.Add(appliedJob);
-                db.SaveChanges();
+                await db.Tbl_AppliedJobs.AddAsync(appliedJob);
+                await db.SaveChangesAsync();
                 return Created();
             }
         }
 
         [HttpDelete("DeleteApplication/{Id}")]
-        public IActionResult DeleteApplication(int Id)
+        public async Task<IActionResult> DeleteApplication(int Id)
         {
-            var data = db.Tbl_AppliedJobs.Find(Id);
+            var data = await db.Tbl_AppliedJobs.FindAsync(Id);
 
             if (data == null)
             {
@@ -51,15 +52,15 @@ namespace ZABCareersAPIs.Controllers
             else
             {
                 db.Tbl_AppliedJobs.Remove(data);
-                db.SaveChanges();
+                await db.SaveChangesAsync();
                 return NoContent();
             }
         }
 
         [HttpGet("GetApplicationByID/{Id}")]
-        public IActionResult GetApplicationByID(int Id)
+        public async Task<IActionResult> GetApplicationByID(int Id)
         {
-            var data = db.Tbl_AppliedJobs.Find(Id);
+            var data = await db.Tbl_AppliedJobs.FindAsync(Id);
 
             if (data == null)
             {

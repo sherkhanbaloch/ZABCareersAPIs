@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using ZABCareersAPIs.Data;
 using ZABCareersAPIs.Models;
 
@@ -17,14 +18,19 @@ namespace ZABCareersAPIs.Controllers
         }
 
         [HttpGet("GetAllRoles")]
-        public IActionResult GetAllRoles()
+        public async Task<IActionResult> GetAllRoles()
         {
-            var data = db.Tbl_Roles.ToList();
+            var data = await db.Tbl_Roles.Select(r => new
+            {
+                r.RoleId,
+                r.RoleName
+            }).ToListAsync();
+
             return Ok(data);
         }
 
         [HttpPost("AddRole")]
-        public IActionResult AddRole([FromBody] Role role)
+        public async Task<IActionResult> AddRole([FromBody] Role role)
         {
             if (role == null)
             {
@@ -32,16 +38,16 @@ namespace ZABCareersAPIs.Controllers
             }
             else
             {
-                db.Tbl_Roles.Add(role);
-                db.SaveChanges();
+                await db.Tbl_Roles.AddAsync(role);
+                await db.SaveChangesAsync();
                 return Created();
             }
         }
 
         [HttpPut("UpdateRole/{Id}")]
-        public IActionResult UpdateRole(int Id, [FromBody] Role role)
+        public async Task<IActionResult> UpdateRole(int Id, [FromBody] Role role)
         {
-            var data = db.Tbl_Roles.Find(Id);
+            var data = await db.Tbl_Roles.FindAsync(Id);
 
             if (data == null)
             {
@@ -50,15 +56,15 @@ namespace ZABCareersAPIs.Controllers
             else
             {
                 data.RoleName = role.RoleName;
-                db.SaveChanges();
+                await db.SaveChangesAsync();
                 return Ok(data);
             }
         }
 
         [HttpDelete("DeleteRole/{Id}")]
-        public IActionResult DeleteRole(int Id)
+        public async Task<IActionResult> DeleteRole(int Id)
         {
-            var data = db.Tbl_Roles.Find(Id);
+            var data = await db.Tbl_Roles.FindAsync(Id);
 
             if (data == null)
             {
@@ -67,15 +73,19 @@ namespace ZABCareersAPIs.Controllers
             else
             {
                 db.Tbl_Roles.Remove(data);
-                db.SaveChanges();
+                await db.SaveChangesAsync();
                 return NoContent();
             }
         }
 
         [HttpGet("GetRoleByID/{Id}")]
-        public IActionResult GetRoleByID(int Id)
+        public async Task<IActionResult> GetRoleByID(int Id)
         {
-            var data = db.Tbl_Roles.Find(Id);
+            var data = await db.Tbl_Roles.Where(r => r.RoleId == Id).Select(r => new
+            {
+                r.RoleId,
+                r.RoleName
+            }).FirstOrDefaultAsync();
 
             if (data == null)
             {

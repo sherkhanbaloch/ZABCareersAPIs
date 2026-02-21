@@ -8,6 +8,5 @@
         public string Subject { get; set; }
         public string MessageText { get; set; }
         public string CheckStatus { get; set; }
-        public int MessageStatus { get; set; }
     }
 }

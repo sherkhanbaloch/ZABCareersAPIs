@@ -6,6 +6,7 @@
 
         // Foreign Keys
         public int AppliedJobId { get; set; }
+        public AppliedJob? AppliedJob { get; set; }
 
         public float MatchedScore { get; set; }
         public string KeySkills { get; set; }

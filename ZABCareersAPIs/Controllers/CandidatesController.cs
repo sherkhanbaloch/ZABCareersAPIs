@@ -1,5 +1,7 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.VisualBasic;
 using ZABCareersAPIs.Data;
 using ZABCareersAPIs.Models;
 
@@ -17,14 +19,14 @@ namespace ZABCareersAPIs.Controllers
         }
 
         [HttpGet("GetAllCandidates")]
-        public IActionResult GetAllCandidates()
+        public async Task<IActionResult> GetAllCandidates()
         {
-            var data = db.Tbl_Candidates.ToList();
+            var data = await db.Tbl_Candidates.ToListAsync();
             return Ok(data);
         }
 
         [HttpPost("AddCandidate")]
-        public IActionResult AddCandidate([FromForm] Candidate candidate)
+        public async Task<IActionResult> AddCandidate([FromForm] Candidate candidate)
         {
             if (candidate == null)
             {
@@ -32,16 +34,16 @@ namespace ZABCareersAPIs.Controllers
             }
             else
             {
-                db.Tbl_Candidates.Add(candidate);
-                db.SaveChanges();
+                await db.Tbl_Candidates.AddAsync(candidate);
+                await db.SaveChangesAsync();
                 return Created();
             }
         }
 
         [HttpPut("UpdateCandidate/{Id}")]
-        public IActionResult UpdateCandidate(int Id, [FromForm] Candidate candidate)
+        public async Task<IActionResult> UpdateCandidate(int Id, [FromForm] Candidate candidate)
         {
-            var data = db.Tbl_Candidates.Find(Id);
+            var data = await db.Tbl_Candidates.FindAsync(Id);
 
             if (data == null)
             {
@@ -54,15 +56,15 @@ namespace ZABCareersAPIs.Controllers
                 data.CandidateEmail = candidate.CandidateEmail;
                 data.CandidateMobile = candidate.CandidateMobile;
                 data.CandidateResume = candidate.CandidateResume;
-                db.SaveChanges();
+                await db.SaveChangesAsync();
                 return Ok(data);
             }
         }
 
         [HttpDelete("DeleteCandidate/{Id}")]
-        public IActionResult DeleteCandidate(int Id)
+        public async Task<IActionResult> DeleteCandidate(int Id)
         {
-            var data = db.Tbl_Candidates.Find(Id);
+            var data = await db.Tbl_Candidates.FindAsync(Id);
 
             if (data == null)
             {
@@ -71,15 +73,15 @@ namespace ZABCareersAPIs.Controllers
             else
             {
                 db.Tbl_Candidates.Remove(data);
-                db.SaveChanges();
+                await db.SaveChangesAsync();
                 return NoContent();
             }
         }
 
         [HttpGet("GetCandidateByID/{Id}")]
-        public IActionResult GetCandidateByID(int Id)
+        public async Task<IActionResult> GetCandidateByID(int Id)
         {
-            var data = db.Tbl_Candidates.Find(Id);
+            var data = await db.Tbl_Candidates.FindAsync(Id);
 
             if (data == null)
             {

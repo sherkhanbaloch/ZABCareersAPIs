@@ -1,4 +1,6 @@
-﻿namespace ZABCareersAPIs.Models
+﻿using System.ComponentModel.DataAnnotations.Schema;
+
+namespace ZABCareersAPIs.Models
 {
     public class User
     {
@@ -10,6 +12,9 @@
 
         // Foreign Keys
         public int RoleId { get; set; }
+        public Role? Role { get; set; }
+
         public int CampusId { get; set; }
+        public Campus? Campus { get; set; }
     }
 }

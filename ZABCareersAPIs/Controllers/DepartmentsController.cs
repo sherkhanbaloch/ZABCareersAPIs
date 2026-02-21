@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using ZABCareersAPIs.Data;
 using ZABCareersAPIs.Models;
 
@@ -17,14 +18,19 @@ namespace ZABCareersAPIs.Controllers
         }
 
         [HttpGet("GetAllDepartments")]
-        public IActionResult GetAllDepartments()
+        public async Task<IActionResult> GetAllDepartments()
         {
-            var data = db.Tbl_Departments.ToList();
+            var data = await db.Tbl_Departments.Select(d => new
+            {
+                d.DepartmentId,
+                d.DepartmentName
+            }).ToListAsync();
+
             return Ok(data);
         }
 
         [HttpPost("AddDepartment")]
-        public IActionResult AddDepartment([FromForm] Department department)
+        public async Task<IActionResult> AddDepartment([FromBody] Department department)
         {
             if (department == null)
             {
@@ -32,16 +38,16 @@ namespace ZABCareersAPIs.Controllers
             }
             else
             {
-                db.Tbl_Departments.Add(department);
-                db.SaveChanges();
+                await db.Tbl_Departments.AddAsync(department);
+                await db.SaveChangesAsync();
                 return Created();
             }
         }
 
         [HttpPut("UpdateDepartment/{Id}")]
-        public IActionResult UpdateDepartment(int Id, [FromForm] Department department)
+        public async Task<IActionResult> UpdateDepartment(int Id, [FromBody] Department department)
         {
-            var data = db.Tbl_Departments.Find(Id);
+            var data = await db.Tbl_Departments.FindAsync(Id);
 
             if (data == null)
             {
@@ -50,15 +56,15 @@ namespace ZABCareersAPIs.Controllers
             else
             {
                 data.DepartmentName = department.DepartmentName;
-                db.SaveChanges();
+                await db.SaveChangesAsync();
                 return Ok(data);
             }
         }
 
         [HttpDelete("DeleteDepartment/{Id}")]
-        public IActionResult DeleteDepartment(int Id)
+        public async Task<IActionResult> DeleteDepartment(int Id)
         {
-            var data = db.Tbl_Departments.Find(Id);
+            var data = await db.Tbl_Departments.FindAsync(Id);
 
             if (data == null)
             {
@@ -67,15 +73,19 @@ namespace ZABCareersAPIs.Controllers
             else
             {
                 db.Tbl_Departments.Remove(data);
-                db.SaveChanges();
+                await db.SaveChangesAsync();
                 return NoContent();
             }
         }
 
         [HttpGet("GetDepartmentByID/{Id}")]
-        public IActionResult GetDepartmentByID(int Id)
+        public async Task<IActionResult> GetDepartmentByID(int Id)
         {
-            var data = db.Tbl_Departments.Find(Id);
+            var data = await db.Tbl_Departments.Where(d => d.DepartmentId == Id).Select(d => new
+            {
+                d.DepartmentId,
+                d.DepartmentName
+            }).FirstOrDefaultAsync();
 
             if (data == null)
             {

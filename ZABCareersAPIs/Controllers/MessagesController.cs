@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using ZABCareersAPIs.Data;
 using ZABCareersAPIs.Models;
 
@@ -13,18 +14,18 @@ namespace ZABCareersAPIs.Controllers
 
         public MessagesController(AppDbContext db)
         {
-            this. db = db;
+            this.db = db;
         }
 
         [HttpGet("GetAllMessages")]
-        public IActionResult GetAllMessages()
+        public async Task<IActionResult> GetAllMessages()
         {
-            var data = db.Tbl_Messages.ToList();
+            var data = await db.Tbl_Messages.ToListAsync();
             return Ok(data);
         }
 
         [HttpPost("AddMessage")]
-        public IActionResult AddMessage([FromForm] Message message)
+        public async Task<IActionResult> AddMessage([FromBody] Message message)
         {
             if (message == null)
             {
@@ -32,16 +33,16 @@ namespace ZABCareersAPIs.Controllers
             }
             else
             {
-                db.Tbl_Messages.Add(message);
-                db.SaveChanges();
+                await db.Tbl_Messages.AddAsync(message);
+                await db.SaveChangesAsync();
                 return Created();
             }
         }
 
         [HttpDelete("DeleteMessage/{Id}")]
-        public IActionResult DeleteMessage(int Id)
+        public async Task<IActionResult> DeleteMessage(int Id)
         {
-            var data = db.Tbl_Messages.Find(Id);
+            var data = await db.Tbl_Messages.FindAsync(Id);
 
             if (data == null)
             {
@@ -50,15 +51,15 @@ namespace ZABCareersAPIs.Controllers
             else
             {
                 db.Tbl_Messages.Remove(data);
-                db.SaveChanges();
+                await db.SaveChangesAsync();
                 return NoContent();
             }
         }
 
         [HttpGet("GetMessageByID/{Id}")]
-        public IActionResult GetMessageByID(int Id)
+        public async Task<IActionResult> GetMessageByID(int Id)
         {
-            var data = db.Tbl_Messages.Find(Id);
+            var data = await db.Tbl_Messages.FindAsync(Id);
 
             if (data == null)
             {
