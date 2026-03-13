@@ -6,6 +6,7 @@ namespace ZABCareersAPIs.Models
     {
         public int CampusId { get; set; }
         public string CampusName { get; set; }
+
         [NotMapped]
         public IFormFile? CampusLogo { get; set; }
         public string? CampusLogoUrl { get; set; }

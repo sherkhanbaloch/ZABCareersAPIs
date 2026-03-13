@@ -1,15 +1,23 @@
 using Microsoft.EntityFrameworkCore;
 using Scalar.AspNetCore;
-using System;
 using ZABCareersAPIs.Data;
+using ZABCareersAPIs.Service.Implement;
+using ZABCareersAPIs.Service.Interface;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 
 builder.Services.AddControllers();
+builder.Services.AddSingleton<IArtificialIntelligence, ArtificialIntelligence>();
+builder.Services.AddScoped<IResumeParser, ResumeParser>();
+builder.Services.AddScoped<IResumeMatcher, ResumeMatcher>();
 // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
 builder.Services.AddOpenApi();
+
+// Swagger
+builder.Services.AddEndpointsApiExplorer();
+builder.Services.AddSwaggerGen();
 
 var con = builder.Configuration.GetConnectionString("dbcs");
 builder.Services.AddDbContext<AppDbContext>(options => options.UseSqlServer(con));
@@ -31,6 +39,9 @@ if (app.Environment.IsDevelopment())
 {
     app.MapOpenApi();
     app.MapScalarApiReference(); // Scalar API reference mapping
+
+    app.UseSwagger();
+    app.UseSwaggerUI();
 }
 
 app.UseHttpsRedirection();

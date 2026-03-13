@@ -12,8 +12,8 @@ using ZABCareersAPIs.Data;
 namespace ZABCareersAPIs.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20260123125539_CreateDatabase")]
-    partial class CreateDatabase
+    [Migration("20260223043624_DatabaseCreated")]
+    partial class DatabaseCreated
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -39,10 +39,20 @@ namespace ZABCareersAPIs.Migrations
                     b.Property<int>("CandidateId")
                         .HasColumnType("int");
 
+                    b.Property<bool>("IsPrimaryResume")
+                        .HasColumnType("bit");
+
                     b.Property<int>("JobId")
                         .HasColumnType("int");
 
+                    b.Property<string>("ResumeUsedUrl")
+                        .HasColumnType("nvarchar(max)");
+
                     b.HasKey("AppliedJobId");
+
+                    b.HasIndex("CandidateId");
+
+                    b.HasIndex("JobId");
 
                     b.ToTable("Tbl_AppliedJobs");
                 });
@@ -59,8 +69,7 @@ namespace ZABCareersAPIs.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("CampusLogo")
-                        .IsRequired()
+                    b.Property<string>("CampusLogoUrl")
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("CampusName")
@@ -99,12 +108,14 @@ namespace ZABCareersAPIs.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("CandidateResume")
-                        .IsRequired()
+                    b.Property<string>("CandidateResumeUrl")
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<int>("CandidateStatus")
                         .HasColumnType("int");
+
+                    b.Property<DateTime>("ResumeLastUpdated")
+                        .HasColumnType("datetime2");
 
                     b.HasKey("CandidateId");
 
@@ -120,6 +131,7 @@ namespace ZABCareersAPIs.Migrations
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("DepartmentId"));
 
                     b.Property<string>("DepartmentName")
+                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<int>("DepartmentStatus")
@@ -155,11 +167,11 @@ namespace ZABCareersAPIs.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int>("Experience")
-                        .HasColumnType("int");
-
-                    b.Property<string>("FeaturedImage")
+                    b.Property<string>("Experience")
                         .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("FeaturedImageUrl")
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Gender")
@@ -181,7 +193,7 @@ namespace ZABCareersAPIs.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("OtherBenifits")
+                    b.Property<string>("OtherBenefits")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
@@ -192,13 +204,18 @@ namespace ZABCareersAPIs.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<decimal>("Salary")
-                        .HasColumnType("decimal(18,2)");
+                    b.Property<string>("Salary")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<int>("Vacancy")
                         .HasColumnType("int");
 
                     b.HasKey("JobId");
+
+                    b.HasIndex("CampusId");
+
+                    b.HasIndex("DepartmentId");
 
                     b.ToTable("Tbl_Jobs");
                 });
@@ -218,9 +235,6 @@ namespace ZABCareersAPIs.Migrations
                     b.Property<string>("Email")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
-
-                    b.Property<int>("MessageStatus")
-                        .HasColumnType("int");
 
                     b.Property<string>("MessageText")
                         .IsRequired()
@@ -251,6 +265,9 @@ namespace ZABCareersAPIs.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<DateTime>("AnalyzedOn")
+                        .HasColumnType("datetime2");
+
                     b.Property<int>("AppliedJobId")
                         .HasColumnType("int");
 
@@ -273,11 +290,17 @@ namespace ZABCareersAPIs.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<string>("ResumeHash")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<string>("SkillsMatched")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.HasKey("ResumeAnalysisId");
+
+                    b.HasIndex("AppliedJobId");
 
                     b.ToTable("Tbl_ResumeAnalysis");
                 });
@@ -333,7 +356,79 @@ namespace ZABCareersAPIs.Migrations
 
                     b.HasKey("UserId");
 
+                    b.HasIndex("CampusId");
+
+                    b.HasIndex("RoleId");
+
                     b.ToTable("Tbl_Users");
+                });
+
+            modelBuilder.Entity("ZABCareersAPIs.Models.AppliedJob", b =>
+                {
+                    b.HasOne("ZABCareersAPIs.Models.Candidate", "Candidate")
+                        .WithMany()
+                        .HasForeignKey("CandidateId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("ZABCareersAPIs.Models.Job", "Job")
+                        .WithMany()
+                        .HasForeignKey("JobId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Candidate");
+
+                    b.Navigation("Job");
+                });
+
+            modelBuilder.Entity("ZABCareersAPIs.Models.Job", b =>
+                {
+                    b.HasOne("ZABCareersAPIs.Models.Campus", "Campus")
+                        .WithMany()
+                        .HasForeignKey("CampusId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("ZABCareersAPIs.Models.Department", "Department")
+                        .WithMany()
+                        .HasForeignKey("DepartmentId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Campus");
+
+                    b.Navigation("Department");
+                });
+
+            modelBuilder.Entity("ZABCareersAPIs.Models.ResumeAnalysis", b =>
+                {
+                    b.HasOne("ZABCareersAPIs.Models.AppliedJob", "AppliedJob")
+                        .WithMany()
+                        .HasForeignKey("AppliedJobId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("AppliedJob");
+                });
+
+            modelBuilder.Entity("ZABCareersAPIs.Models.User", b =>
+                {
+                    b.HasOne("ZABCareersAPIs.Models.Campus", "Campus")
+                        .WithMany()
+                        .HasForeignKey("CampusId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("ZABCareersAPIs.Models.Role", "Role")
+                        .WithMany()
+                        .HasForeignKey("RoleId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Campus");
+
+                    b.Navigation("Role");
                 });
 #pragma warning restore 612, 618
         }

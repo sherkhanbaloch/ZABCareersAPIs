@@ -6,6 +6,7 @@ namespace ZABCareersAPIs.Models
     {
         public int JobId { get; set; }
         public string JobTitle { get; set; }
+
         [NotMapped]
         public IFormFile? FeaturedImage { get; set; }
         public string? FeaturedImageUrl { get; set; }

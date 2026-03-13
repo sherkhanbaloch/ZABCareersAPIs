@@ -126,7 +126,7 @@ namespace ZABCareersAPIs.Controllers
 
                     job.FeaturedImage.CopyTo(new FileStream(path, FileMode.Create));
 
-                    data.FeaturedImageUrl = "/Images/CampusLogos/" + fileName;
+                   data.FeaturedImageUrl = "/Images/JobImages/" + fileName;
                 }
 
                 await db.SaveChangesAsync();

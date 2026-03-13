@@ -20,6 +20,7 @@ namespace ZABCareersAPIs.Data
         public DbSet<Message> Tbl_Messages { get; set; }
         public DbSet<AppliedJob> Tbl_AppliedJobs { get; set; }
         public DbSet<ResumeAnalysis> Tbl_ResumeAnalysis { get; set; }
+        public DbSet<EmailAccount> Tbl_EmailAccounts { get; set; }
 
     }
 }

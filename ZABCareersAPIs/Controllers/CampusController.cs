@@ -130,7 +130,6 @@ namespace ZABCareersAPIs.Controllers
             {
                 c.CampusId,
                 c.CampusName,
-                c.CampusLogo,
                 c.CampusLogoUrl,
                 c.CampusLocation
             }).FirstOrDefaultAsync();

@@ -16,7 +16,7 @@ namespace ZABCareersAPIs.Controllers
             this.db = db;
         }
 
-        [HttpGet]
+        [HttpGet("GetDashboardData")]
         public async Task<IActionResult> GetDashboardData()
         {
             int TotalJobs = await db.Tbl_Jobs.CountAsync();

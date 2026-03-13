@@ -9,9 +9,13 @@ namespace ZABCareersAPIs.Models
         public string CandidateEmail { get; set; }
         public string CandidatePassword { get; set; }
         public string CandidateMobile { get; set; }
+
         [NotMapped]
-        public IFormFile CandidateResume { get; set; }
-        public string CandidateResumeUrl { get; set; }
+        public IFormFile? CandidateResume { get; set; }
+        public string? CandidateResumeUrl { get; set; }
+        public DateTime ResumeLastUpdated { get; set; }
+        public bool? IsEmailVerified { get; set; }
+        public int? OTP { get; set; }
         public int CandidateStatus { get; set; }
     }
 }

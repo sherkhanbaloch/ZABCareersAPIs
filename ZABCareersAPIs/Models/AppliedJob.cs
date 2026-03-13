@@ -11,6 +11,9 @@
         public int CandidateId { get; set; }
         public Candidate? Candidate { get; set; }
 
-        public int ApplicationStatus { get; set; }
+        public string? ResumeUsedUrl { get; set; }
+        public bool? IsPrimaryResume { get; set; }
+
+        public string? ApplicationStatus { get; set; }
     }
 }

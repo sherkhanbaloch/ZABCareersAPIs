@@ -12,8 +12,8 @@ using ZABCareersAPIs.Data;
 namespace ZABCareersAPIs.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20260221154704_B")]
-    partial class B
+    [Migration("20260308160702_aaaaa")]
+    partial class aaaaa
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -33,14 +33,20 @@ namespace ZABCareersAPIs.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("AppliedJobId"));
 
-                    b.Property<int>("ApplicationStatus")
-                        .HasColumnType("int");
+                    b.Property<string>("ApplicationStatus")
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<int>("CandidateId")
                         .HasColumnType("int");
 
+                    b.Property<bool?>("IsPrimaryResume")
+                        .HasColumnType("bit");
+
                     b.Property<int>("JobId")
                         .HasColumnType("int");
+
+                    b.Property<string>("ResumeUsedUrl")
+                        .HasColumnType("nvarchar(max)");
 
                     b.HasKey("AppliedJobId");
 
@@ -103,11 +109,13 @@ namespace ZABCareersAPIs.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("CandidateResumeUrl")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<int>("CandidateStatus")
                         .HasColumnType("int");
+
+                    b.Property<DateTime>("ResumeLastUpdated")
+                        .HasColumnType("datetime2");
 
                     b.HasKey("CandidateId");
 
@@ -228,9 +236,6 @@ namespace ZABCareersAPIs.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int>("MessageStatus")
-                        .HasColumnType("int");
-
                     b.Property<string>("MessageText")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
@@ -260,6 +265,9 @@ namespace ZABCareersAPIs.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<DateTime>("AnalyzedOn")
+                        .HasColumnType("datetime2");
+
                     b.Property<int>("AppliedJobId")
                         .HasColumnType("int");
 
@@ -279,6 +287,10 @@ namespace ZABCareersAPIs.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("RequiredSkills")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("ResumeHash")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 

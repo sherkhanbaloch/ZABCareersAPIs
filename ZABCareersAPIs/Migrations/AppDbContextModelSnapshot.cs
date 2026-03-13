@@ -30,14 +30,20 @@ namespace ZABCareersAPIs.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("AppliedJobId"));
 
-                    b.Property<int>("ApplicationStatus")
-                        .HasColumnType("int");
+                    b.Property<string>("ApplicationStatus")
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<int>("CandidateId")
                         .HasColumnType("int");
 
+                    b.Property<bool?>("IsPrimaryResume")
+                        .HasColumnType("bit");
+
                     b.Property<int>("JobId")
                         .HasColumnType("int");
+
+                    b.Property<string>("ResumeUsedUrl")
+                        .HasColumnType("nvarchar(max)");
 
                     b.HasKey("AppliedJobId");
 
@@ -100,11 +106,19 @@ namespace ZABCareersAPIs.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("CandidateResumeUrl")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<int>("CandidateStatus")
                         .HasColumnType("int");
+
+                    b.Property<bool?>("IsEmailVerified")
+                        .HasColumnType("bit");
+
+                    b.Property<int?>("OTP")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("ResumeLastUpdated")
+                        .HasColumnType("datetime2");
 
                     b.HasKey("CandidateId");
 
@@ -129,6 +143,40 @@ namespace ZABCareersAPIs.Migrations
                     b.HasKey("DepartmentId");
 
                     b.ToTable("Tbl_Departments");
+                });
+
+            modelBuilder.Entity("ZABCareersAPIs.Models.EmailAccount", b =>
+                {
+                    b.Property<int>("EmailAccountId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("EmailAccountId"));
+
+                    b.Property<int>("EmailAccountStatus")
+                        .HasColumnType("int");
+
+                    b.Property<string>("EmailHost")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("EmailPassword")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("EmailPort")
+                        .HasColumnType("int");
+
+                    b.Property<string>("EmailUsername")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<bool>("IsDefault")
+                        .HasColumnType("bit");
+
+                    b.HasKey("EmailAccountId");
+
+                    b.ToTable("Tbl_EmailAccounts");
                 });
 
             modelBuilder.Entity("ZABCareersAPIs.Models.Job", b =>
@@ -254,6 +302,9 @@ namespace ZABCareersAPIs.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<DateTime>("AnalyzedOn")
+                        .HasColumnType("datetime2");
+
                     b.Property<int>("AppliedJobId")
                         .HasColumnType("int");
 
@@ -273,6 +324,10 @@ namespace ZABCareersAPIs.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("RequiredSkills")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("ResumeHash")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
