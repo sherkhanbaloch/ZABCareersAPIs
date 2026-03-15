@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using ZABCareersAPIs.Data;
+using ZABCareersAPIs.Helpers;
 using ZABCareersAPIs.Models;
 
 namespace ZABCareersAPIs.Controllers
@@ -25,7 +26,6 @@ namespace ZABCareersAPIs.Controllers
                 u.UserId,
                 u.UserName,
                 u.UserEmail,
-                u.UserPassword,
                 u.Role.RoleName,
                 u.Campus.CampusName
             }).ToListAsync();
@@ -42,6 +42,9 @@ namespace ZABCareersAPIs.Controllers
             }
             else
             {
+                string PasswordHash = BCrypt.Net.BCrypt.EnhancedHashPassword(user.UserPassword, 13);
+                user.UserPassword = PasswordHash;
+
                 await db.Tbl_Users.AddAsync(user);
                 await db.SaveChangesAsync();
                 return Created();
@@ -63,7 +66,13 @@ namespace ZABCareersAPIs.Controllers
                 data.RoleId = user.RoleId;
                 data.CampusId = user.CampusId;
                 data.UserEmail = user.UserEmail;
-                data.UserPassword = user.UserPassword;
+
+                if (!string.IsNullOrEmpty(user.UserPassword))
+                {
+                    string PasswordHash = BCrypt.Net.BCrypt.EnhancedHashPassword(user.UserPassword, 13);
+                    data.UserPassword = PasswordHash;
+                }
+
                 await db.SaveChangesAsync();
                 return Ok(data);
             }
@@ -94,7 +103,6 @@ namespace ZABCareersAPIs.Controllers
                 u.UserId,
                 u.UserName,
                 u.UserEmail,
-                u.UserPassword,
                 u.RoleId,
                 u.Role.RoleName,
                 u.CampusId,

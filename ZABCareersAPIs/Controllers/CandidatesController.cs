@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using DocumentFormat.OpenXml.Spreadsheet;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.VisualBasic;
@@ -29,7 +30,6 @@ namespace ZABCareersAPIs.Controllers
                 c.CandidateId,
                 c.CandidateName,
                 c.CandidateEmail,
-                c.CandidatePassword,
                 c.CandidateMobile,
                 c.CandidateResumeUrl,
                 c.ResumeLastUpdated,
@@ -72,6 +72,10 @@ namespace ZABCareersAPIs.Controllers
             }
 
             candidate.CandidateResume = null;
+
+            // Password Hashing using BCrypt
+            string PasswordHash = BCrypt.Net.BCrypt.EnhancedHashPassword(candidate.CandidatePassword, 13);
+            candidate.CandidatePassword = PasswordHash;
 
             // OTP Process
             candidate.IsEmailVerified = false;
@@ -116,7 +120,13 @@ namespace ZABCareersAPIs.Controllers
 
             data.CandidateName = candidate.CandidateName;
             data.CandidateEmail = candidate.CandidateEmail;
-            data.CandidatePassword = candidate.CandidatePassword;
+
+            if (!string.IsNullOrEmpty(candidate.CandidatePassword))
+            {
+                string PasswordHash = BCrypt.Net.BCrypt.EnhancedHashPassword(candidate.CandidatePassword, 13);
+                data.CandidatePassword = PasswordHash;
+            }
+
             data.CandidateMobile = candidate.CandidateMobile;
 
             if (candidate.CandidateResume != null)
@@ -166,7 +176,6 @@ namespace ZABCareersAPIs.Controllers
                 c.CandidateId,
                 c.CandidateName,
                 c.CandidateEmail,
-                c.CandidatePassword,
                 c.CandidateMobile,
                 c.CandidateResumeUrl,
                 c.ResumeLastUpdated,

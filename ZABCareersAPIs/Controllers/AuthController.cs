@@ -1,7 +1,14 @@
 ﻿using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
+using System.IdentityModel.Tokens.Jwt;
+using System.Security.Claims;
+using System.Text;
 using ZABCareersAPIs.Data;
+using ZABCareersAPIs.Helpers;
+using ZABCareersAPIs.Models;
 using ZABCareersAPIs.ViewModels;
 
 namespace ZABCareersAPIs.Controllers
@@ -20,32 +27,56 @@ namespace ZABCareersAPIs.Controllers
         [HttpPost("AdminLogin")]
         public async Task<IActionResult> AdminLogin([FromBody] LoginVM login)
         {
-            var user = await db.Tbl_Users.FirstOrDefaultAsync(u => u.UserName == login.UserName && u.UserPassword == login.Password);
+            var user = await db.Tbl_Users.FirstOrDefaultAsync(u => u.UserName == login.UserName);
 
             if (user != null)
             {
-                return Ok(user);
+                bool isHashMatched = BCrypt.Net.BCrypt.EnhancedVerify(login.Password, user.UserPassword);
+
+                if (isHashMatched == true)
+                {
+                    return Ok(user);
+                }
+                else
+                {
+                    return Unauthorized("Invalid User Name or Password.");
+                }
             }
-            return Unauthorized("Invalid credentials.");
+            else
+            {
+                return Unauthorized("Invalid User Name or Password.");
+            }
         }
 
         [HttpPost("UserLogin")]
         public async Task<IActionResult> UserLogin([FromBody] LoginVM login)
         {
-            var user = await db.Tbl_Candidates.FirstOrDefaultAsync(u => u.CandidateEmail == login.UserName && u.CandidatePassword == login.Password);
+            var user = await db.Tbl_Candidates.FirstOrDefaultAsync(u => u.CandidateEmail == login.UserName);
 
             if (user != null)
             {
-                if (user.IsEmailVerified == true)
+                bool isHashMatched = BCrypt.Net.BCrypt.EnhancedVerify(login.Password, user.CandidatePassword);
+
+                if (isHashMatched == true)
                 {
-                    return Ok(user.CandidateId);
+                    if (user.IsEmailVerified == true)
+                    {
+                        return Ok(user.CandidateId);
+                    }
+                    else
+                    {
+                        return BadRequest("Email Not Verified.");
+                    }
                 }
                 else
                 {
-                    return BadRequest("Email Not Verified.");
+                    return Unauthorized("Invalid User Name or Password.");
                 }
             }
-            return Unauthorized("Invalid credentials.");
+            else
+            {
+                return Unauthorized("Invalid User Name or Password.");
+            }
         }
 
         [HttpPost("UserOTPVerify")]
