@@ -9,6 +9,7 @@ namespace ZABCareersAPIs.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    [Authorize(Roles = "Admin")]
     public class AppliedJobController : ControllerBase
     {
         private readonly AppDbContext db;
@@ -78,6 +79,7 @@ namespace ZABCareersAPIs.Controllers
         }
 
         [HttpGet("GetIsJobApplied/{JobId}/{CandidateId}")]
+        [Authorize(Roles = "Candidate")]
         public async Task<IActionResult> GetIsJobApplied(int JobId, int CandidateId)
         {
             var exists = await db.Tbl_AppliedJobs.AnyAsync(a => a.JobId == JobId && a.CandidateId == CandidateId);
@@ -86,6 +88,7 @@ namespace ZABCareersAPIs.Controllers
         }
 
         [HttpPost("AddApplication")]
+        [Authorize(Roles = "Candidate")]
         public async Task<IActionResult> AddApplication([FromBody] AppliedJob appliedJob)
         {
             if (appliedJob == null)

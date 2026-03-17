@@ -1,4 +1,5 @@
 ﻿using DocumentFormat.OpenXml.Spreadsheet;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -11,6 +12,7 @@ namespace ZABCareersAPIs.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    [Authorize(Roles = "Candidate")]
     public class CandidatesController : ControllerBase
     {
         private readonly AppDbContext db;
@@ -23,6 +25,7 @@ namespace ZABCareersAPIs.Controllers
         }
 
         [HttpGet("GetAllCandidates")]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> GetAllCandidates()
         {
             var data = await db.Tbl_Candidates.Select(c => new
@@ -39,6 +42,7 @@ namespace ZABCareersAPIs.Controllers
             return Ok(data);
         }
 
+        [AllowAnonymous]
         [HttpPost("AddCandidate")]
         public async Task<IActionResult> AddCandidate([FromForm] Candidate candidate)
         {

@@ -28,6 +28,24 @@ builder.Services.AddSwaggerGen();
 var con = builder.Configuration.GetConnectionString("dbcs");
 builder.Services.AddDbContext<AppDbContext>(options => options.UseSqlServer(con));
 
+// JWT Token Authentication
+builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJwtBearer(options =>
+{
+    options.TokenValidationParameters = new TokenValidationParameters
+    {
+        ValidateIssuer = true,
+        ValidateAudience = true,
+        ValidateLifetime = true,
+        ValidateIssuerSigningKey = true,
+
+        ValidIssuer = builder.Configuration["AppSettings:ISSUER"],
+        ValidAudience = builder.Configuration["AppSettings:AUDIENCE"],
+
+        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["AppSettings:SECRET_KEY"]!)),
+        ClockSkew = TimeSpan.Zero
+    };
+});
+
 builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowAngular", builder =>

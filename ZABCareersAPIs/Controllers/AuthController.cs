@@ -18,10 +18,12 @@ namespace ZABCareersAPIs.Controllers
     public class AuthController : ControllerBase
     {
         private readonly AppDbContext db;
+        private readonly IConfiguration configuration;
 
-        public AuthController(AppDbContext db)
+        public AuthController(AppDbContext db, IConfiguration configuration)
         {
             this.db = db;
+            this.configuration = configuration;
         }
 
         [HttpPost("AdminLogin")]
@@ -35,7 +37,8 @@ namespace ZABCareersAPIs.Controllers
 
                 if (isHashMatched == true)
                 {
-                    return Ok(user);
+                    string Token = CreateToken(user.UserId, user.UserName, "Admin");
+                    return Ok(Token);
                 }
                 else
                 {
@@ -61,7 +64,8 @@ namespace ZABCareersAPIs.Controllers
                 {
                     if (user.IsEmailVerified == true)
                     {
-                        return Ok(user.CandidateId);
+                        string Token = CreateToken(user.CandidateId, user.CandidateName, "Candidate");
+                        return Ok(Token);
                     }
                     else
                     {
@@ -92,6 +96,39 @@ namespace ZABCareersAPIs.Controllers
                 return Ok(user.CandidateId);
             }
             return BadRequest("Email and OTP does not match.");
+        }
+
+        // Custom Methods
+
+        private string CreateToken(int UserId, string UserName, string Role)
+        {
+            string ISSUER = configuration.GetValue<string>("AppSettings:ISSUER")!;
+            string AUDIENCE = configuration.GetValue<string>("AppSettings:AUDIENCE")!;
+            string SECRET_KEY = configuration.GetValue<string>("AppSettings:SECRET_KEY")!;
+            DateTime EXPIRY = DateTime.UtcNow.AddDays(1);
+
+            byte[] EncodedKey = Encoding.UTF8.GetBytes(SECRET_KEY);
+            var key = new SymmetricSecurityKey(EncodedKey);
+            var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
+
+            var claims = new List<Claim>
+            {
+                new Claim("id", UserId.ToString()),
+                new Claim("name", UserName),
+                new Claim("role", Role)
+            };
+
+            var token = new JwtSecurityToken(
+                issuer: ISSUER,
+                audience: AUDIENCE,
+                claims: claims,
+                expires: EXPIRY,
+                signingCredentials: creds
+            );
+
+            string FinalToken = new JwtSecurityTokenHandler().WriteToken(token);
+
+            return FinalToken;
         }
     }
 }

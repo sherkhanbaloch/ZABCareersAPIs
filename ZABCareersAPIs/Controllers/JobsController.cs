@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using ZABCareersAPIs.Data;
@@ -9,6 +10,7 @@ namespace ZABCareersAPIs.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    [Authorize(Roles = "Admin")]
     public class JobsController : ControllerBase
     {
         private readonly AppDbContext db;
@@ -44,6 +46,7 @@ namespace ZABCareersAPIs.Controllers
             return Ok(data);
         }
 
+        [AllowAnonymous]
         [HttpGet("ViewJobsForUsers")]
         public async Task<IActionResult> ViewJobsForUsers()
         {
@@ -188,6 +191,7 @@ namespace ZABCareersAPIs.Controllers
             }
         }
 
+        [AllowAnonymous]
         [HttpGet("GetJobDetailsForUser/{Id}")]
         public async Task<IActionResult> GetJobDetailsForUser(int Id)
         {

@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using ZABCareersAPIs.Data;
@@ -8,6 +9,7 @@ namespace ZABCareersAPIs.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    [Authorize(Roles = "Admin")]
     public class MessagesController : ControllerBase
     {
         private readonly AppDbContext db;
@@ -24,6 +26,7 @@ namespace ZABCareersAPIs.Controllers
             return Ok(data);
         }
 
+        [AllowAnonymous]
         [HttpPost("AddMessage")]
         public async Task<IActionResult> AddMessage([FromBody] Message message)
         {
