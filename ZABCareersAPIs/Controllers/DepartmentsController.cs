@@ -40,6 +40,7 @@ namespace ZABCareersAPIs.Controllers
             }
             else
             {
+                department.DepartmentStatus = 1;
                 await db.Tbl_Departments.AddAsync(department);
                 await db.SaveChangesAsync();
                 return Created();
@@ -58,6 +59,8 @@ namespace ZABCareersAPIs.Controllers
             else
             {
                 data.DepartmentName = department.DepartmentName;
+                data.DepartmentStatus = department.DepartmentStatus;
+
                 await db.SaveChangesAsync();
                 return Ok(data);
             }

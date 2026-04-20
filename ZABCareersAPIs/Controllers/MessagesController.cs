@@ -36,6 +36,7 @@ namespace ZABCareersAPIs.Controllers
             }
             else
             {
+                message.CheckStatus = "Pending";
                 await db.Tbl_Messages.AddAsync(message);
                 await db.SaveChangesAsync();
                 return Created();

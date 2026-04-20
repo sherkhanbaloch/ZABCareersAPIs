@@ -9,7 +9,6 @@ namespace ZABCareersAPIs.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    [Authorize(Roles = "Admin")]
     public class AppliedJobController : ControllerBase
     {
         private readonly AppDbContext db;
@@ -23,6 +22,7 @@ namespace ZABCareersAPIs.Controllers
             _resumeMatcher = resumeMatcher;
         }
 
+        [Authorize(Roles = "Admin")]
         [HttpGet("GetJobApplications")]
         public async Task<IActionResult> GetJobApplications()
         {
@@ -46,6 +46,7 @@ namespace ZABCareersAPIs.Controllers
             return Ok(result);
         }
 
+        [Authorize(Roles = "Admin")]
         [HttpGet("GetApplicationsByJob/{JobId}")]
         public async Task<IActionResult> GetApplicationsByJob(int JobId)
         {
@@ -78,8 +79,8 @@ namespace ZABCareersAPIs.Controllers
             return Ok(result);
         }
 
-        [HttpGet("GetIsJobApplied/{JobId}/{CandidateId}")]
         [Authorize(Roles = "Candidate")]
+        [HttpGet("GetIsJobApplied/{JobId}/{CandidateId}")]
         public async Task<IActionResult> GetIsJobApplied(int JobId, int CandidateId)
         {
             var exists = await db.Tbl_AppliedJobs.AnyAsync(a => a.JobId == JobId && a.CandidateId == CandidateId);
@@ -87,8 +88,8 @@ namespace ZABCareersAPIs.Controllers
             return Ok(exists);
         }
 
-        [HttpPost("AddApplication")]
         [Authorize(Roles = "Candidate")]
+        [HttpPost("AddApplication")]
         public async Task<IActionResult> AddApplication([FromBody] AppliedJob appliedJob)
         {
             if (appliedJob == null)
@@ -113,6 +114,7 @@ namespace ZABCareersAPIs.Controllers
                 CandidateId = appliedJob.CandidateId,
                 ResumeUsedUrl = resumeUrl,
                 IsPrimaryResume = true,
+                AppliedOn = DateTime.UtcNow,
                 ApplicationStatus = "Pending"
             };
 
@@ -154,6 +156,24 @@ namespace ZABCareersAPIs.Controllers
             return Ok(data);
         }
 
+        [Authorize(Roles = "Candidate")]
+        [HttpGet("GetAppliedJobsForUser/{CandidateId}")]
+        public async Task<IActionResult> GetAppliedJobsForUser(int CandidateId)
+        {
+            var data = await db.Tbl_AppliedJobs.Where(aj => aj.CandidateId == CandidateId).Select(aj => new
+            {
+                aj.AppliedJobId,
+                aj.Job.JobTitle,
+                aj.Job.JobLocation,
+                aj.Job.ApplicationDeadline,
+                aj.AppliedOn,
+                aj.ApplicationStatus
+            }).ToListAsync();
+
+            return Ok(data);
+        }
+
+        [Authorize(Roles = "Admin")]
         [HttpPut("ChangeApplicationStatus/{appliedJobId}/{status}")]
         public async Task<IActionResult> ChangeApplicationStatus(int appliedJobId, string status)
         {

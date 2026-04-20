@@ -12,7 +12,6 @@ namespace ZABCareersAPIs.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    [Authorize(Roles = "Candidate")]
     public class CandidatesController : ControllerBase
     {
         private readonly AppDbContext db;
@@ -88,6 +87,8 @@ namespace ZABCareersAPIs.Controllers
             int OTPNumber = random.Next(100000, 999999);
             candidate.OTP = OTPNumber;
 
+            candidate.CandidateStatus = 1;
+
             await db.Tbl_Candidates.AddAsync(candidate);
             await db.SaveChangesAsync();
 
@@ -113,6 +114,7 @@ namespace ZABCareersAPIs.Controllers
         }
 
         [HttpPut("UpdateCandidate/{Id}")]
+        [Authorize(Roles = "Candidate")]
         public async Task<IActionResult> UpdateCandidate(int Id, [FromForm] Candidate candidate)
         {
             var data = await db.Tbl_Candidates.FindAsync(Id);
@@ -156,6 +158,7 @@ namespace ZABCareersAPIs.Controllers
         }
 
         [HttpDelete("DeleteCandidate/{Id}")]
+        [Authorize(Roles = "Candidate")]
         public async Task<IActionResult> DeleteCandidate(int Id)
         {
             var data = await db.Tbl_Candidates.FindAsync(Id);
@@ -173,6 +176,7 @@ namespace ZABCareersAPIs.Controllers
         }
 
         [HttpGet("GetCandidateByID/{Id}")]
+        [Authorize(Roles = "Candidate")]
         public async Task<IActionResult> GetCandidateByID(int Id)
         {
             var data = await db.Tbl_Candidates.Where(c => c.CandidateId == Id).Select(c => new

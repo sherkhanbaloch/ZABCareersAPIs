@@ -114,9 +114,9 @@ Be honest and accurate in your assessment. A 70% match means the candidate is ge
         {
             return new ResumeMatchResult
             {
-                MatchPercentage = 45, // More realistic default
+                MatchPercentage = 0, // More realistic default
                 Experience = "Not specified",
-                MatchedSkills = new List<string>(), // Empty by default
+                MatchedSkills = new List<string>{ "Please check job requirements" }, // Empty by default
                 MissingSkills = new List<string> { "Please check job requirements" },
                 Suggestions = new List<string>
                 {

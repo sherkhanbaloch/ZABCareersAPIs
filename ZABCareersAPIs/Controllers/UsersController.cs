@@ -46,6 +46,7 @@ namespace ZABCareersAPIs.Controllers
             {
                 string PasswordHash = BCrypt.Net.BCrypt.EnhancedHashPassword(user.UserPassword, 13);
                 user.UserPassword = PasswordHash;
+                user.UserStatus = 1;
 
                 await db.Tbl_Users.AddAsync(user);
                 await db.SaveChangesAsync();
@@ -74,6 +75,8 @@ namespace ZABCareersAPIs.Controllers
                     string PasswordHash = BCrypt.Net.BCrypt.EnhancedHashPassword(user.UserPassword, 13);
                     data.UserPassword = PasswordHash;
                 }
+
+                data.UserStatus = user.UserStatus;
 
                 await db.SaveChangesAsync();
                 return Ok(data);

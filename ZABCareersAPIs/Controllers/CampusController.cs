@@ -71,6 +71,7 @@ namespace ZABCareersAPIs.Controllers
 
                 campus.CampusLogoUrl = "/Images/CampusLogos/" + fileName;
                 campus.CampusLogo = null;
+                campus.CampusStatus = 1;
 
                 await db.Tbl_Campus.AddAsync(campus);
                 await db.SaveChangesAsync();

@@ -46,6 +46,7 @@ namespace ZABCareersAPIs.Controllers
             }
             else
             {
+                email.EmailAccountStatus = 1;
                 await db.Tbl_EmailAccounts.AddAsync(email);
                 await db.SaveChangesAsync();
                 return Created();
@@ -68,6 +69,7 @@ namespace ZABCareersAPIs.Controllers
                 data.EmailUsername = email.EmailUsername;
                 data.EmailPassword = email.EmailPassword;
                 data.IsDefault = email.IsDefault;
+                data.EmailAccountStatus = email.EmailAccountStatus;
 
                 await db.SaveChangesAsync();
                 return Ok(data);

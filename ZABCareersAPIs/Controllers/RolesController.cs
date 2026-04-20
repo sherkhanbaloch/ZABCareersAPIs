@@ -40,6 +40,7 @@ namespace ZABCareersAPIs.Controllers
             }
             else
             {
+                role.RoleStatus = 1;
                 await db.Tbl_Roles.AddAsync(role);
                 await db.SaveChangesAsync();
                 return Created();
@@ -58,6 +59,8 @@ namespace ZABCareersAPIs.Controllers
             else
             {
                 data.RoleName = role.RoleName;
+                data.RoleStatus = role.RoleStatus;
+
                 await db.SaveChangesAsync();
                 return Ok(data);
             }

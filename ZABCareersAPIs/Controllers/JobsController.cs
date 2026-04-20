@@ -88,6 +88,8 @@ namespace ZABCareersAPIs.Controllers
                 job.FeaturedImageUrl = "/Images/JobImages/" + fileName;
                 job.FeaturedImage = null;
 
+                job.JobStatus = 1;
+
                 await db.Tbl_Jobs.AddAsync(job);
                 await db.SaveChangesAsync();
                 return Created();
@@ -121,6 +123,7 @@ namespace ZABCareersAPIs.Controllers
                 data.OtherBenefits = job.OtherBenefits;
                 data.CampusId = job.CampusId;
                 data.DepartmentId = job.DepartmentId;
+                data.JobStatus = job.JobStatus;
 
                 if (job.FeaturedImage != null)
                 {
@@ -129,7 +132,7 @@ namespace ZABCareersAPIs.Controllers
 
                     job.FeaturedImage.CopyTo(new FileStream(path, FileMode.Create));
 
-                   data.FeaturedImageUrl = "/Images/JobImages/" + fileName;
+                    data.FeaturedImageUrl = "/Images/JobImages/" + fileName;
                 }
 
                 await db.SaveChangesAsync();
