@@ -1,8 +1,10 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Newtonsoft.Json;
 using ZABCareersAPIs.Data;
 using ZABCareersAPIs.Models;
+using ZABCareersAPIs.Service.Implement;
 using ZABCareersAPIs.Service.Interface;
 
 namespace ZABCareersAPIs.Controllers
@@ -132,21 +134,26 @@ namespace ZABCareersAPIs.Controllers
                 var formFile = new FormFile(new MemoryStream(fileBytes), 0, fileBytes.Length, "ResumeFile", Path.GetFileName(fullPath));
 
                 var resumeText = await _resumeParser.ExtractTextFromFileAsync(formFile);
-
-                var result = await _resumeMatcher.MatchResumeAsync(resumeText, job.JobDescription);
+                var jobDescription = JobDescriptionBuilder.Build(job);
+                var result = await _resumeMatcher.MatchResumeAsync(resumeText, jobDescription);
 
                 var analysis = new ResumeAnalysis
                 {
                     AppliedJobId = data.AppliedJobId,
-                    MatchedScore = result.MatchPercentage,
-                    KeySkills = "",
+                    MatchedScore = result.Success ? result.MatchPercentage : -1,
+                    KeySkills = result.Success ? "" : "Analysis failed",
                     RequiredSkills = "",
                     Experience = result.Experience,
-                    SkillsMatched = string.Join(",", result.MatchedSkills),
+                    SkillsMatched = result.Success
+                        ? string.Join(",", result.MatchedSkills)
+                        : result.ErrorMessage ?? "Analysis failed",
                     MissingSkills = string.Join(",", result.MissingSkills),
-                    AISuggestions = string.Join(",", result.Suggestions),
+                    AISuggestions = result.Success
+                        ? string.Join(",", result.Suggestions)
+                        : result.ErrorMessage ?? "Analysis failed",
                     AnalyzedOn = DateTime.UtcNow,
-                    ResumeHash = ""
+                    ResumeHash = "",
+                    FullAnalysisJson = JsonConvert.SerializeObject(result)
                 };
 
                 await db.Tbl_ResumeAnalysis.AddAsync(analysis);
@@ -190,5 +197,24 @@ namespace ZABCareersAPIs.Controllers
 
             return Ok();
         }
+
+        [Authorize(Roles = "Candidate")]
+        [HttpDelete("WithdrawJob/{ApplicationID}")]
+        public async Task<IActionResult> WithdrawJob(int ApplicationID)
+        {
+            var data = await db.Tbl_AppliedJobs.FirstOrDefaultAsync(x => x.AppliedJobId == ApplicationID);
+            
+            if (data == null)
+            {
+                return NotFound();
+            }
+            else
+            {
+                db.Tbl_AppliedJobs.Remove(data);
+                await db.SaveChangesAsync();
+                return Ok("Application Withdrawal Successful.");
+            }
+        }
+
     }
 }

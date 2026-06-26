@@ -12,8 +12,8 @@ using ZABCareersAPIs.Data;
 namespace ZABCareersAPIs.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20260302035349_AJ")]
-    partial class AJ
+    [Migration("20260610111250_CreateDatabase")]
+    partial class CreateDatabase
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -35,6 +35,9 @@ namespace ZABCareersAPIs.Migrations
 
                     b.Property<string>("ApplicationStatus")
                         .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime>("AppliedOn")
+                        .HasColumnType("datetime2");
 
                     b.Property<int>("CandidateId")
                         .HasColumnType("int");
@@ -114,6 +117,12 @@ namespace ZABCareersAPIs.Migrations
                     b.Property<int>("CandidateStatus")
                         .HasColumnType("int");
 
+                    b.Property<bool?>("IsEmailVerified")
+                        .HasColumnType("bit");
+
+                    b.Property<int?>("OTP")
+                        .HasColumnType("int");
+
                     b.Property<DateTime>("ResumeLastUpdated")
                         .HasColumnType("datetime2");
 
@@ -140,6 +149,40 @@ namespace ZABCareersAPIs.Migrations
                     b.HasKey("DepartmentId");
 
                     b.ToTable("Tbl_Departments");
+                });
+
+            modelBuilder.Entity("ZABCareersAPIs.Models.EmailAccount", b =>
+                {
+                    b.Property<int>("EmailAccountId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("EmailAccountId"));
+
+                    b.Property<int>("EmailAccountStatus")
+                        .HasColumnType("int");
+
+                    b.Property<string>("EmailHost")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("EmailPassword")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("EmailPort")
+                        .HasColumnType("int");
+
+                    b.Property<string>("EmailUsername")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<bool>("IsDefault")
+                        .HasColumnType("bit");
+
+                    b.HasKey("EmailAccountId");
+
+                    b.ToTable("Tbl_EmailAccounts");
                 });
 
             modelBuilder.Entity("ZABCareersAPIs.Models.Job", b =>
@@ -273,6 +316,9 @@ namespace ZABCareersAPIs.Migrations
 
                     b.Property<string>("Experience")
                         .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("FullAnalysisJson")
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("KeySkills")

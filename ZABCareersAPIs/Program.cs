@@ -3,6 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Scalar.AspNetCore;
 using System.Text;
+using ZABCareersAPIs.Configuration;
 using ZABCareersAPIs.Data;
 using ZABCareersAPIs.Service.Implement;
 using ZABCareersAPIs.Service.Interface;
@@ -12,8 +13,9 @@ var builder = WebApplication.CreateBuilder(args);
 // Add services to the container.
 builder.Services.AddControllers();
 
-// Resume Analaysis
-builder.Services.AddSingleton<IArtificialIntelligence, ArtificialIntelligence>();
+// Resume analysis
+builder.Services.Configure<MistralSettings>(builder.Configuration.GetSection(MistralSettings.SectionName));
+builder.Services.AddHttpClient<IArtificialIntelligence, ArtificialIntelligence>();
 builder.Services.AddScoped<IResumeParser, ResumeParser>();
 builder.Services.AddScoped<IResumeMatcher, ResumeMatcher>();
 
@@ -38,10 +40,10 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJw
         ValidateLifetime = true,
         ValidateIssuerSigningKey = true,
 
-        ValidIssuer = builder.Configuration["AppSettings:ISSUER"],
-        ValidAudience = builder.Configuration["AppSettings:AUDIENCE"],
+        ValidIssuer = builder.Configuration["JWTToken:ISSUER"],
+        ValidAudience = builder.Configuration["JWTToken:AUDIENCE"],
 
-        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["AppSettings:SECRET_KEY"]!)),
+        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["JWTToken:SECRET_KEY"]!)),
         ClockSkew = TimeSpan.Zero
     };
 });

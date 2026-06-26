@@ -315,6 +315,9 @@ namespace ZABCareersAPIs.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<string>("FullAnalysisJson")
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<string>("KeySkills")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");

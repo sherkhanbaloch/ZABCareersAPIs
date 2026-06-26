@@ -2,6 +2,6 @@
 {
     public interface IArtificialIntelligence
     {
-        Task<string> OpenAITurboModelAsync(string prompt, dynamic Data);
+        Task<ChatCompletionResult> CompleteChatAsync(string systemPrompt, string userContent);
     }
 }

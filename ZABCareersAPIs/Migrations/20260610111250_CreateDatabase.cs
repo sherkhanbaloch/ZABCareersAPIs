@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace ZABCareersAPIs.Migrations
 {
     /// <inheritdoc />
-    public partial class DatabaseCreated : Migration
+    public partial class CreateDatabase : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -39,6 +39,8 @@ namespace ZABCareersAPIs.Migrations
                     CandidateMobile = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     CandidateResumeUrl = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     ResumeLastUpdated = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    IsEmailVerified = table.Column<bool>(type: "bit", nullable: true),
+                    OTP = table.Column<int>(type: "int", nullable: true),
                     CandidateStatus = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
@@ -58,6 +60,24 @@ namespace ZABCareersAPIs.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Tbl_Departments", x => x.DepartmentId);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Tbl_EmailAccounts",
+                columns: table => new
+                {
+                    EmailAccountId = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    EmailHost = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    EmailPort = table.Column<int>(type: "int", nullable: false),
+                    EmailUsername = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    EmailPassword = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    IsDefault = table.Column<bool>(type: "bit", nullable: false),
+                    EmailAccountStatus = table.Column<int>(type: "int", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Tbl_EmailAccounts", x => x.EmailAccountId);
                 });
 
             migrationBuilder.CreateTable(
@@ -171,8 +191,9 @@ namespace ZABCareersAPIs.Migrations
                     JobId = table.Column<int>(type: "int", nullable: false),
                     CandidateId = table.Column<int>(type: "int", nullable: false),
                     ResumeUsedUrl = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    IsPrimaryResume = table.Column<bool>(type: "bit", nullable: false),
-                    ApplicationStatus = table.Column<int>(type: "int", nullable: false)
+                    IsPrimaryResume = table.Column<bool>(type: "bit", nullable: true),
+                    AppliedOn = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    ApplicationStatus = table.Column<string>(type: "nvarchar(max)", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -206,7 +227,8 @@ namespace ZABCareersAPIs.Migrations
                     MissingSkills = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     AISuggestions = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     AnalyzedOn = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    ResumeHash = table.Column<string>(type: "nvarchar(max)", nullable: false)
+                    ResumeHash = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    FullAnalysisJson = table.Column<string>(type: "nvarchar(max)", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -258,6 +280,9 @@ namespace ZABCareersAPIs.Migrations
         /// <inheritdoc />
         protected override void Down(MigrationBuilder migrationBuilder)
         {
+            migrationBuilder.DropTable(
+                name: "Tbl_EmailAccounts");
+
             migrationBuilder.DropTable(
                 name: "Tbl_Messages");
 

@@ -21,5 +21,7 @@
         public DateTime AnalyzedOn { get; set; }
 
         public string ResumeHash { get; set; }
+
+        public string? FullAnalysisJson { get; set; }
     }
 }

@@ -1,15 +1,12 @@
-﻿using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
 using ZABCareersAPIs.Data;
-using ZABCareersAPIs.Helpers;
-using ZABCareersAPIs.Models;
 using ZABCareersAPIs.ViewModels;
+
 
 namespace ZABCareersAPIs.Controllers
 {
@@ -30,7 +27,7 @@ namespace ZABCareersAPIs.Controllers
         public async Task<IActionResult> AdminLogin([FromBody] LoginVM login)
         {
             // Temporary Super Admin Login
-            if (login.UserName == "superadmin" || login.Password == "123")
+            if (login.UserName == configuration.GetValue<string>("SuperAdmin:UserName") || login.Password == configuration.GetValue<string>("SuperAdmin:Password"))
             {
                 string Token = CreateToken(0, "Super Admin", "Admin");
                 return Ok(Token);
@@ -72,7 +69,7 @@ namespace ZABCareersAPIs.Controllers
                     if (user.IsEmailVerified == true)
                     {
                         string Token = CreateToken(user.CandidateId, user.CandidateName, "Candidate");
-                        return Ok(Token);
+                         return Ok(Token);
                     }
                     else
                     {
@@ -109,10 +106,10 @@ namespace ZABCareersAPIs.Controllers
 
         private string CreateToken(int UserId, string UserName, string Role)
         {
-            string ISSUER = configuration.GetValue<string>("AppSettings:ISSUER")!;
-            string AUDIENCE = configuration.GetValue<string>("AppSettings:AUDIENCE")!;
-            string SECRET_KEY = configuration.GetValue<string>("AppSettings:SECRET_KEY")!;
-            DateTime EXPIRY = DateTime.UtcNow.AddDays(1);
+            string ISSUER = configuration.GetValue<string>("JWTToken:ISSUER")!;
+            string AUDIENCE = configuration.GetValue<string>("JWTToken:AUDIENCE")!;
+            string SECRET_KEY = configuration.GetValue<string>("JWTToken:SECRET_KEY")!;
+            DateTime EXPIRY = DateTime.UtcNow.AddMinutes(20);
 
             byte[] EncodedKey = Encoding.UTF8.GetBytes(SECRET_KEY);
             var key = new SymmetricSecurityKey(EncodedKey);
@@ -129,6 +126,7 @@ namespace ZABCareersAPIs.Controllers
                 issuer: ISSUER,
                 audience: AUDIENCE,
                 claims: claims,
+                notBefore: DateTime.UtcNow,
                 expires: EXPIRY,
                 signingCredentials: creds
             );
