@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Authorization;
+﻿using DocumentFormat.OpenXml.InkML;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -100,6 +101,28 @@ namespace ZABCareersAPIs.Controllers
             {
                 return Ok(data);
             }
+        }
+
+        [AllowAnonymous]
+        [HttpGet("GetTotalJobsWithDepartments")]
+        public async Task<IActionResult> GetTotalJobsWithDepartments()
+        {
+            var data = await db.Tbl_Jobs.GroupBy(j => j.DepartmentId).Select(g => new
+            {
+                DepartmentId = g.Key,
+                TotalJobs = g.Count()
+            }).Join(
+                     db.Tbl_Departments,
+                     job => job.DepartmentId,
+                     department => department.DepartmentId,
+                     (job, department) => new
+                     {
+                         department.DepartmentId,
+                         department.DepartmentName,
+                         job.TotalJobs
+                     }).ToListAsync();
+
+            return Ok(data);
         }
     }
 }

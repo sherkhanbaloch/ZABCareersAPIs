@@ -32,7 +32,7 @@ namespace ZABCareersAPIs.Controllers
         [HttpGet("ViewJobsForAdmin")]
         public async Task<IActionResult> ViewJobsForAdmin()
         {
-            var data = await db.Tbl_Jobs.Select(j => new
+            var data = await db.Tbl_Jobs.Where(x => x.JobStatus == 1).Select(j => new
             {
                 j.JobId,
                 j.JobTitle,
@@ -50,7 +50,7 @@ namespace ZABCareersAPIs.Controllers
         [HttpGet("ViewJobsForUsers")]
         public async Task<IActionResult> ViewJobsForUsers()
         {
-            var data = await db.Tbl_Jobs.Select(j => new
+            var data = await db.Tbl_Jobs.Where(x => x.JobStatus == 1).Select(j => new
             {
                 j.JobId,
                 j.Campus.CampusLogoUrl,
@@ -160,7 +160,7 @@ namespace ZABCareersAPIs.Controllers
         [HttpGet("GetJobByID/{Id}")]
         public async Task<IActionResult> GetJobByID(int Id)
         {
-            var data = await db.Tbl_Jobs.Where(u => u.JobId == Id).Select(j => new
+            var data = await db.Tbl_Jobs.Where(u => u.JobId == Id && u.JobStatus == 1).Select(j => new
             {
                 j.JobId,
                 j.JobTitle,
@@ -198,7 +198,7 @@ namespace ZABCareersAPIs.Controllers
         [HttpGet("GetJobDetailsForUser/{Id}")]
         public async Task<IActionResult> GetJobDetailsForUser(int Id)
         {
-            var data = await db.Tbl_Jobs.Where(u => u.JobId == Id).Select(j => new
+            var data = await db.Tbl_Jobs.Where(u => u.JobId == Id && u.JobStatus == 1).Select(j => new
             {
                 j.JobId,
                 j.JobTitle,
